@@ -2,6 +2,7 @@ Resourxces:
 1. Full text search: https://github.com/quickwit-oss/tantivy
 2. File crawler: [https://github.com/ronin13/finde-rs, https://github.com/zseri/zs-filecrawler]
 3. Environment introspection: [
+https://docs.rs/crate/standard_paths/latest
 https://github.com/dirs-dev/directories-rs,
 https://docs.rs/mime_guess/latest/mime_guess/,
 https://github.com/bojand/infer*,

@@ -1,7 +1,12 @@
+pub use config::{Config, ConfigManager};
 pub use modes::Modes;
 use modes::{Action, Parser};
 
+mod application;
+mod config;
+mod database;
 mod modes;
+mod user_data;
 
 pub fn execute(input: &str) -> Result<String, String> {
     match Modes::parse(input) {

@@ -20,6 +20,7 @@ impl Validator for InputValidator {
 }
 
 fn main() {
+
     let validator = InputValidator {};
     let mut rl = Editor::new();
     rl.set_helper(Some(validator));
