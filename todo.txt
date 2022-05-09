@@ -1,0 +1,14 @@
+Resourxces:
+1. Full text search: https://github.com/quickwit-oss/tantivy
+2. File crawler: [https://github.com/ronin13/finde-rs, https://github.com/zseri/zs-filecrawler]
+3. Environment introspection: [
+https://github.com/dirs-dev/directories-rs,
+https://docs.rs/mime_guess/latest/mime_guess/,
+https://github.com/bojand/infer*,
+]
+
+https://github.com/jhspetersson/fselect
+
+## Features
+1. Application Launcher (AppInfo)
+2. File search
