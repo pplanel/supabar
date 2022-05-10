@@ -3,6 +3,17 @@ use rustyline::Result;
 use rustyline::{error::ReadlineError, Editor};
 use rustyline_derive::{Completer, Helper, Highlighter, Hinter};
 
+fn main() {
+    //let state = match UserState::new() {
+    //    Ok(state) => state,
+    //    Err(_) => println!("Creating new config")
+    //}
+    //if let Some(config) = Config::load_or_create() {
+    //    Ok(config) => 
+    //}
+    run_cli();
+}
+
 #[derive(Completer, Helper, Highlighter, Hinter)]
 struct InputValidator {}
 
@@ -19,8 +30,7 @@ impl Validator for InputValidator {
     }
 }
 
-fn main() {
-
+fn run_cli() {
     let validator = InputValidator {};
     let mut rl = Editor::new();
     rl.set_helper(Some(validator));

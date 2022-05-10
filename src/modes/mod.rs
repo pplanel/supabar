@@ -7,10 +7,6 @@ pub trait Parser {
     fn parse(input: &str) -> Result<Action, ModeParseError>;
 }
 
-pub enum Action {
-    OpenFile(String),
-    OpenApp(String),
-}
 #[derive(Debug, Error)]
 pub enum ModeParseError {
     #[error("Mode not found")]
