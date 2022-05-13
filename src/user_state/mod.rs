@@ -1,6 +1,8 @@
-use anyhow::Result;
+use anyhow::{ Result};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
+use std::fs;
+use std::io::Write;
 use std::path::PathBuf;
 use std::sync::RwLock;
 
@@ -13,12 +15,12 @@ struct File {
     file_type: String,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct UserState {
     uuid: String,
     username: String,
-    locations: HashMap<String, PathBuf>,
     index: PathBuf,
+    locations: HashMap<String, PathBuf>,
 }
 
 lazy_static! {
@@ -26,26 +28,55 @@ lazy_static! {
 }
 
 impl UserState {
-    pub fn new() -> Result<UserState> {
+    pub fn new(config: Config) -> Result<UserState> {
         let uuid = uuid::Uuid::new_v4();
-        let config = Config::new();
         let username = whoami::username();
         let state = Self {
             uuid: uuid.to_string(),
             username,
             index: Index::create_user_index(&config),
-            locations: HashMap::new(),
+            locations: config.to_hashmap(),
         };
         Ok(state)
     }
 
     pub fn save(&self) {
-        if self.locations.get()
+        self.write_memory();
+        if let Some(app_data) = self.locations.get(&"AppDataLocation".to_string()) {
+            let full_path = format!(
+                "{}/client_{}_state.toml",
+                app_data.to_str().unwrap(),
+                self.uuid
+            );
+            let mut file = fs::File::create(full_path).unwrap();
+            let contents = toml::to_string(&self).unwrap();
+            file.write_all(contents.as_bytes()).unwrap();
+        }
     }
-    pub fn load(&self) {}
+
+    pub fn load(&mut self) {
+        if let Some(app_data) = self.locations.get(&"AppDataLocation".to_string()) {
+            let full_path = format!(
+                "{}/client_{}_state.toml",
+                app_data.to_str().unwrap(),
+                self.uuid
+            );
+            let contents = std::fs::read_to_string(full_path).expect("cannot read config");
+            *self = toml::from_str(contents.as_str()).unwrap();
+        }
+    }
+
+    fn write_memory(&self) {
+        let mut writeable = STATE.write().unwrap();
+        *writeable = Some(self.clone());
+    }
 }
 
 #[test]
 fn test_user_state() {
-    let state = UserState::new();
+    let config = Config::new();
+    if let Ok(mut state) = UserState::new(config) {
+        state.save();
+        state.load();
+    }
 }

@@ -1,7 +1,5 @@
 use standard_paths::*;
-use std::path::PathBuf;
-
-use anyhow::Result;
+use std::{collections::HashMap, path::PathBuf};
 
 const APP_NAME: &'static str = "supabar";
 const APP_ORG: &'static str = "superluminal";
@@ -14,19 +12,24 @@ pub struct Config {
 impl Config {
     pub fn new() -> Self {
         let sl = StandardPaths::new(APP_NAME, APP_ORG);
-        let app_data = sl.writable_location(LocationType::AppDataLocation);
-        let config = sl.writable_location(LocationType::AppConfigLocation);
-        Config {
-            app_data: app_data.unwrap(),
-            config: config.unwrap(),
+        let app_data = sl
+            .writable_location(LocationType::AppDataLocation)
+            .expect("path dotnt exist");
+        let config = sl
+            .writable_location(LocationType::AppConfigLocation)
+            .expect("df");
+        for path in vec![&app_data, &config] {
+            if !&path.exists() {
+                let _ = std::fs::create_dir_all(path.as_path());
+            }
         }
+        Config { app_data, config }
     }
 
-    fn setup_app_folders(self) -> Result<(), anyhow::Error> {
-        Ok(for path in vec![self.app_data, self.config] {
-                if !&path.exists() {
-                    let _ = std::fs::create_dir_all(path.as_path());
-                }
-        })
+    pub fn to_hashmap(self) -> HashMap<String, PathBuf> {
+        HashMap::from([
+            (String::from("AppDataLocation"), self.app_data.clone()),
+            (String::from("AppConfigLocation"), self.config.clone()),
+        ])
     }
 }

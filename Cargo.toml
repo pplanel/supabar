@@ -5,6 +5,10 @@ edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [[bin]]
+name = "crawl"
+path = "src/bin/crawl.rs"
+
+[[bin]]
 name = "cmd"
 path = "src/bin/cmd.rs"
 
@@ -23,6 +27,11 @@ whoami = "1.2.1"
 serde = { version = "1.0.137", features = ["derive"] }
 toml = "0.5.9"
 tokio = { version = "1.18.2", features = ["full"] }
+walkdir = "2.3.2"
+tree_magic_mini = "3.0.3"
+mime = "0.3.16"
+async-trait = "0.1.53"
+chrono = "0.4.19"
 
 [dependencies.uuid]
 version = "1.0.0"

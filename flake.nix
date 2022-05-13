@@ -25,20 +25,19 @@
     utils.url = "github:numtide/flake-utils";
   };
 
-  outputs =
-    { self
-    , nixpkgs
-    , crane
-    , gitignore
-    , rust
-    , utils
-    , ...
-    }:
-    utils.lib.eachSystem (utils.lib.defaultSystems ++ [ "x86_64-linux" ]) (system:
-    let
+  outputs = {
+    self,
+    nixpkgs,
+    crane,
+    gitignore,
+    rust,
+    utils,
+    ...
+  }:
+    utils.lib.eachSystem (utils.lib.defaultSystems ++ ["x86_64-linux"]) (system: let
       pkgs = import nixpkgs {
         inherit system;
-        overlays = [ gitignore.overlay rust.overlay ];
+        overlays = [gitignore.overlay rust.overlay];
       };
 
       toolchain = pkgs.rust-bin.fromRustupToolchainFile ./rust-toolchain.toml;
@@ -55,7 +54,7 @@
       cargoArtifacts = craneLib.buildDepsOnly {
         inherit src;
       };
-      fmt = craneLib.cargoFmt { inherit cargoArtifacts src; };
+      fmt = craneLib.cargoFmt {inherit cargoArtifacts src;};
       clippy = craneLib.cargoClippy {
         inherit src;
         cargoArtifacts = fmt;
@@ -65,11 +64,10 @@
         inherit src;
         cargoArtifacts = clippy;
       };
-    in
-    {
-      checks = { inherit fmt clippy; };
+    in {
+      checks = {inherit fmt clippy;};
       defaultPackage = self.packages."${system}".supabar;
-      packages.supabar = { };
+      packages.supabar = {};
 
       defaultApp = self.apps."${system}".supabar;
 
@@ -109,7 +107,6 @@
           ];
           shellHook = ''
             export SHELL="${pkgs.bashInteractive}/bin/bash"
-            export XDG_DATA_DIRS="$XDG_DATA_DIRS:${pkgs.gtk4}/share/gsettings-schemas/gtk+3-3.24.21"
             export EDITOR=vim
             pre-commit install --install-hooks
           '';
