@@ -1,4 +1,3 @@
-use thiserror::Error;
 mod application {}
 mod files {}
 

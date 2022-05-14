@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<config>
+    <source_groups>
+        <source_group_8091add0-4175-4ef3-9fc2-82d68df31b09>
+            <custom_command>/home/pplanel/w/stacktraceflow_sourcetrail/build/stacktraceflow --translate %{SOURCE_FILE_PATH} %{DATABASE_FILE_PATH}</custom_command>
+            <name>Custom Command Source Group</name>
+            <run_in_parallel>0</run_in_parallel>
+            <source_paths>
+                <source_path>../../target/debug/stacktraceflow_record</source_path>
+                <source_path>./</source_path>
+            </source_paths>
+            <status>enabled</status>
+            <type>Custom Command Source Group</type>
+        </source_group_8091add0-4175-4ef3-9fc2-82d68df31b09>
+    </source_groups>
+    <version>8</version>
+</config>

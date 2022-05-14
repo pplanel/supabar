@@ -1,4 +1,4 @@
-use anyhow::{ Result};
+use anyhow::Result;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::fs;
@@ -9,16 +9,10 @@ use std::sync::RwLock;
 use crate::database::Index;
 use crate::Config;
 
-struct File {
-    name: String,
-    path: PathBuf,
-    file_type: String,
-}
-
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct UserState {
-    uuid: String,
-    username: String,
+    pub uuid: String,
+    pub username: String,
     index: PathBuf,
     locations: HashMap<String, PathBuf>,
 }
@@ -54,16 +48,17 @@ impl UserState {
         }
     }
 
-    pub fn load(&mut self) {
-        if let Some(app_data) = self.locations.get(&"AppDataLocation".to_string()) {
-            let full_path = format!(
-                "{}/client_{}_state.toml",
-                app_data.to_str().unwrap(),
-                self.uuid
-            );
-            let contents = std::fs::read_to_string(full_path).expect("cannot read config");
-            *self = toml::from_str(contents.as_str()).unwrap();
-        }
+    pub fn load(&mut self) -> Result<()> {
+        let app_data = self.locations.get(&"AppDataLocation".to_string()).unwrap();
+
+        let full_path = format!(
+            "{}/client_{}_state.toml",
+            app_data.to_str().unwrap(),
+            self.uuid
+        );
+        let contents = std::fs::read_to_string(full_path)?;
+        *self = toml::from_str(contents.as_str())?;
+        Ok(())
     }
 
     fn write_memory(&self) {
@@ -77,6 +72,6 @@ fn test_user_state() {
     let config = Config::new();
     if let Ok(mut state) = UserState::new(config) {
         state.save();
-        state.load();
+        state.load().unwrap();
     }
 }
