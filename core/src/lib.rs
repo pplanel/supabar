@@ -20,7 +20,6 @@ use user_state::UserState;
 mod config;
 mod database;
 pub mod logging;
-mod modes;
 mod user_state;
 
 pub struct Handler {
