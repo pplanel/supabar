@@ -1,0 +1,24 @@
+cargo-features = ["workspace-inheritance"]
+[package]
+name = "indexers"
+version.workspace = true
+description.workspace = true
+authors.workspace = true
+edition.workspace = true
+
+[dependencies]
+contracts = { path = "../contracts" }
+csv_indexer = { path = "csv" }
+docx_indexer = { path = "docx" }
+exif_indexer = { path = "exif" }
+mobile_net_v2_indexer = { path = "mobile_net_v2" }
+pdf_indexer = { path = "pdf" }
+pptx_indexer = { path = "pptx" }
+spreadsheet_indexer = { path = "spreadsheet" }
+text_indexer = { path = "text" }
+serde.workspace = true
+pallet.workspace = true
+tracing.workspace = true
+tracing-futures.workspace = true
+tokio.workspace =true
+once_cell.workspace = true

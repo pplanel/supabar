@@ -1,0 +1,20 @@
+cargo-features = ["workspace-inheritance"]
+[package]
+name = "spreadsheet_indexer"
+version = "0.1.0"
+authors = ["Teodor Voinea <voinea.teodor@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+contracts = { path = "../../contracts" }
+calamine = "0.18"
+
+anyhow.workspace =true
+tracing.workspace =true
+tokio.workspace = true
+[dev-dependencies]
+criterion = "0"
+
+[[bench]]
+name = "spreadsheet_benchmark"
+harness = false

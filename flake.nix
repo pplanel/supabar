@@ -97,19 +97,13 @@
           ];
 
           buildInputs = [
-            gtk3
-            libappindicator
-            libsoup
             openssl
-            webkitgtk
-            bashInteractive
-            nodejs
-            yarn
-            nodePackages.pnpm
             grpc-tools
-            electron
+            bashInteractive
+            glib
           ];
           shellHook = ''
+            QT_PLUGIN_PATH=${qt5.qtbase}/${qt5.qtbase.qtPluginPrefix}
             export SHELL="${pkgs.bashInteractive}/bin/bash"
             export EDITOR=vim
             pre-commit install --install-hooks

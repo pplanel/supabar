@@ -1,16 +1,14 @@
 [toolchain]
-channel = "stable"
+channel = "nightly"
 components = [
     "cargo",
     "clippy",
     "rust-analysis",
-    "rls",
     "rust-src",
     "rust-std",
     "rustc",
     "rustfmt",
 ]
 targets = [
-    "x86_64-unknown-linux-musl",
-    "wasm32-unknown-unknown"
+    "x86_64-unknown-linux-gnu"
 ]

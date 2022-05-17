@@ -1,0 +1,24 @@
+cargo-features = ["workspace-inheritance"]
+[package]
+name = "exif_indexer"
+version.workspace = true
+description.workspace = true
+authors.workspace = true
+edition.workspace = true
+
+[dependencies]
+contracts = { path = "../../contracts" }
+
+anyhow.workspace =true
+tracing.workspace =true
+tokio.workspace = true
+lazy_static.workspace = true
+kamadak-exif = "0.3"
+reverse_geocoder = "2"
+
+[dev-dependencies]
+criterion = "0"
+
+[[bench]]
+name = "exif_benchmark"
+harness = false

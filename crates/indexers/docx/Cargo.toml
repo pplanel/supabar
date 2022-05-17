@@ -1,0 +1,14 @@
+cargo-features = ["workspace-inheritance"]
+[package]
+name = "docx_indexer"
+version.workspace = true
+description.workspace = true
+authors.workspace = true
+edition.workspace = true
+
+[dependencies]
+contracts = { path = "../../contracts" }
+anyhow.workspace =true
+tracing.workspace =true
+tokio.workspace = true
+# docx = "1.1.2"

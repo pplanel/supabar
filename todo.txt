@@ -11,5 +11,6 @@ https://github.com/bojand/infer*,
 https://github.com/jhspetersson/fselect
 
 ## Features
-1. Application Launcher (AppInfo)
+1. Application Launcher (AppInfo) [OK]
 2. File search
+2.1 Use Podium arch

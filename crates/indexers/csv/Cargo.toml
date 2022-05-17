@@ -1,0 +1,20 @@
+cargo-features = ["workspace-inheritance"]
+[package]
+name = "csv_indexer"
+version = "0.1.0"
+authors = ["Teodor Voinea <voinea.teodor@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+contracts = { path = "../../contracts" }
+anyhow.workspace =true
+tracing.workspace =true
+tokio.workspace = true
+csv = "1.1.6"
+
+[dev-dependencies]
+criterion = "0.3.5"
+
+[[bench]]
+name = "csv_benchmark"
+harness = false

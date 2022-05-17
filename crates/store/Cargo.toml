@@ -1,0 +1,20 @@
+cargo-features = ["workspace-inheritance"]
+[package]
+name = "store"
+version.workspace = true
+description.workspace = true
+authors.workspace = true
+edition.workspace = true
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+tempfile = "3.3.0"
+walkdir = "2.3.2"
+anyhow.workspace = true
+pallet.workspace = true
+serde.workspace = true
+sled.workspace =true
+tokio.workspace = true
+tracing.workspace = true
+tracing-futures.workspace = true

@@ -1,0 +1,23 @@
+{
+	"folders": [
+		{
+			"path": "core"
+		},
+		{
+			"path": "store"
+		},
+		{
+			"path": "indexers"
+		},
+		{
+			"path": "common"
+		},
+		{
+			"path": "contracts"
+		},
+		{
+			"path": "."
+		}
+	],
+	"settings": {}
+}
