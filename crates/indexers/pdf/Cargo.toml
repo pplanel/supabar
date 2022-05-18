@@ -1,18 +1,18 @@
 cargo-features = ["workspace-inheritance"]
 [package]
 name = "pdf_indexer"
-version = "0.1.0"
-authors = ["Teodor Voinea <voinea.teodor@gmail.com>"]
-edition = "2018"
+version.workspace = true
+description.workspace = true
+authors.workspace = true
+edition.workspace = true
 
 [dependencies]
 contracts = { path = "../../contracts" }
-
 anyhow.workspace =true
 tracing.workspace =true
 tokio.workspace = true
-pdf-extract = "0.6"
 regex = "1"
+lopdf = "0.27.0"
 
 [dev-dependencies]
 criterion = "0"

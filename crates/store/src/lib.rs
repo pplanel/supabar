@@ -1,3 +1,6 @@
+pub mod store;
+use tracing::Level;
+use tracing_subscriber::util::SubscriberInitExt;
 use walkdir::DirEntry;
 /// Checks if a file or directory is hidden
 pub fn is_hidden(entry: &DirEntry) -> bool {
@@ -7,34 +10,64 @@ pub fn is_hidden(entry: &DirEntry) -> bool {
         .map(|s| s.starts_with('.'))
         .unwrap_or(false)
 }
-
+fn setup_global_subscriber() {
+    let _t = tracing_subscriber::fmt()
+        .with_max_level(Level::INFO)
+        .finish()
+        .try_init();
+}
 #[cfg(test)]
 mod tests {
+    use contracts::candidate::new_file_to_process;
+    use indexers::Analyzer;
+    use tracing::{error, span, Level};
     use walkdir::WalkDir;
 
     use super::*;
 
-    #[test]
-    fn test_multi_docs_pallet_index() -> Result<(), Box<dyn std::error::Error>> {
+    #[tokio::test]
+    async fn it_works() -> Result<(), Box<dyn std::error::Error>> {
+        super::setup_global_subscriber();
         let temp_dir = tempfile::TempDir::new_in(".")?;
-
         let db = sled::open(temp_dir.path().join("db"))?;
-
         let store = pallet::Store::builder()
             .with_db(db)
             .with_index_dir(temp_dir.path())
             .finish()?;
-        let walker = WalkDir::new("../fixtures").into_iter();
-        let documents = walker
-            .filter_entry(|e| !is_hidden(e) && !e.file_type().is_dir())
-            .filter_map(|Ok(e)| e.path().extension())
-            .filter_map(|e| {})
-            .collect();
+        let analyzer = Analyzer::default();
+        let walker = WalkDir::new("./fixtures").into_iter();
+        let mut docs = Vec::default();
+        for entry in walker.filter_entry(|e| !is_hidden(e)) {
+            match entry {
+                Err(_) => {
+                    error!("Failed to read entry from dir walker: {:?}", entry);
+                    continue;
+                }
+                _ => {}
+            }
+            let entry = entry.unwrap();
+            let entry_path = entry.path().to_str().unwrap();
+            let process_file_span = span!(Level::INFO, "processing_file", entry_path);
+            let _process_file_entry = process_file_span.enter();
+            if !entry.file_type().is_dir() {
+                let entry_path = entry.path();
+
+                match entry_path.extension() {
+                    None => continue,
+                    Some(extension) => {
+                        if !analyzer.supported_extensions.contains(extension) {
+                            continue;
+                        }
+                    }
+                }
+                let file_to_process = new_file_to_process(entry_path).await;
+                let result = analyzer.analyze(file_to_process).await;
+                docs.extend(result);
+            }
+        }
+        let _ = store.create_multi(&docs);
+        let docs = store.search("media_type:image_net")?;
+        dbg!(docs);
         Ok(())
-    }
-    #[test]
-    fn it_works() {
-        let result = 2 + 2;
-        assert_eq!(result, 4);
     }
 }

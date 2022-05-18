@@ -104,7 +104,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_indexing_pptx_file() {
-        let test_file_path = Path::new("../../../test_files/Cats.pptx");
+        let test_file_path = Path::new("../test_files/Cats.pptx");
         let indexed_document = PptxIndexer
             .index_file(&new_file_to_process(test_file_path).await)
             .unwrap();

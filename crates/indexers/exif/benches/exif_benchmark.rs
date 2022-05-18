@@ -14,7 +14,7 @@ use tokio;
 
 fn bench_indexing_exif_file(c: &mut Criterion) {
     let rt = Runtime::new().unwrap();
-    let test_file_path = Path::new("../../../test_files/IMG_2551.jpeg");
+    let test_file_path = Path::new("../test_files/IMG_2551.jpeg");
     let ftp = rt.block_on(new_file_to_process(test_file_path));
 
     c.bench_function("indexing_exif_file", |b| {

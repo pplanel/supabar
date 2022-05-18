@@ -35,7 +35,7 @@ mod tests {
 
     // #[tokio::test]
     // async fn test_indexing_docx_file() {
-    //     let test_file_path = Path::new("../../../test_files/Cats.docx");
+    //     let test_file_path = Path::new("../test_files/Cats.docx");
 
     //     let indexed_document = DocxIndexer
     //         .index_file(&new_file_to_process(test_file_path).await)

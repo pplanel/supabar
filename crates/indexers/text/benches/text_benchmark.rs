@@ -14,7 +14,7 @@ use tokio;
 
 fn bench_indexing_text_file(c: &mut Criterion) {
     let rt = Runtime::new().unwrap();
-    let test_file_path = Path::new("../../../test_files/file.txt");
+    let test_file_path = Path::new("../test_files/file.txt");
     let ftp = rt.block_on(new_file_to_process(test_file_path));
 
     c.bench_function("indexing_text_file", |b| {

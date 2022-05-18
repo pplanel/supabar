@@ -1,10 +1,10 @@
 use anyhow::{Context, Error, Result};
 use contracts::candidate::FileCandidate;
 use contracts::indexer::{DocumentSchema, Indexer};
+use lopdf::Document;
 use std::ffi::{OsStr, OsString};
 use tracing::{span, Level};
 
-use pdf_extract::*;
 use regex::Regex;
 
 pub struct PdfIndexer;
@@ -23,12 +23,11 @@ impl Indexer for PdfIndexer {
         span!(Level::INFO, "pdf_indexer: indexing pdf file", path).in_scope(|| {
             let res = span!(Level::INFO, "pdf_indexer: Loading from disk and processing")
                 .in_scope(|| {
-                    // TODO: the resulting string from this is poorly extracted
-                    // better than nothing but it should be fixed
-                    extract_text(&file_to_process.path).with_context(|| {
+                    let document = Document::load(&path)?;
+                    let pages = document.get_pages().into_keys().collect::<Vec<u32>>();
+                    document.extract_text(&pages).with_context(|| {
                         contracts::error::log_and_return_error_string(format!(
-                            "pdf_indexer: Failed to extract text from pdf at path: {:?}",
-                            file_to_process.path
+                            "pdf_indexer: Failed to create regex"
                         ))
                     })
                 })?;

@@ -13,11 +13,11 @@ anyhow.workspace =true
 tracing.workspace =true
 tokio.workspace = true
 lazy_static.workspace = true
-kamadak-exif = "0.3"
-reverse_geocoder = "2"
+kamadak-exif = "0.5.4"
+reverse_geocoder = "3"
 
 [dev-dependencies]
-criterion = "0"
+criterion = "0.3.5"
 
 [[bench]]
 name = "exif_benchmark"

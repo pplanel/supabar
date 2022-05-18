@@ -1,6 +1,5 @@
 use exif_indexer::exif_indexer::ExifIndexer;
 use mobile_net_v2_indexer::mobile_net_v2_indexer::MobileNetV2Indexer;
-//use pdf_indexer::PdfIndexer;
 use text_indexer::text_indexer::TextIndexer;
 // pub use self::docx_indexer::DocxIndexer;
 use contracts::candidate::FileCandidate;
@@ -19,7 +18,25 @@ use contracts::indexer::{DocumentSchema, Indexer};
 
 /// Container for all Indexers
 pub struct Analyzer {
+    indexers: Vec<Box<dyn Indexer>>,
     pub supported_extensions: HashSet<OsString>,
+}
+
+impl Analyzer {
+    #[instrument(skip(file_to_process))]
+    pub async fn analyze(&self, file_to_process: FileCandidate) -> Vec<DocumentSchema> {
+        let processing_task = tokio::task::spawn_blocking(move || {
+            self.indexers
+                .iter()
+                .filter(|indexer| {
+                    indexer.supports_extension(&file_to_process.path.extension().unwrap())
+                })
+                .filter_map(|indexer| indexer.index_file(&file_to_process).ok())
+                .collect()
+        });
+
+        processing_task.await.unwrap()
+    }
 }
 
 impl Default for Analyzer {
@@ -28,7 +45,7 @@ impl Default for Analyzer {
         let indexers: Vec<Box<dyn Indexer>> = vec![
             Box::new(TextIndexer),
             Box::new(ExifIndexer),
-            // Box::new(PdfIndexer),
+            Box::new(PdfIndexer),
             Box::new(MobileNetV2Indexer),
             Box::new(PptxIndexer),
             Box::new(CsvIndexer),
@@ -43,7 +60,8 @@ impl Default for Analyzer {
         );
 
         Analyzer {
-            supported_extensions: supported_extensions,
+            supported_extensions,
+            indexers,
         }
     }
 
@@ -52,7 +70,7 @@ impl Default for Analyzer {
         let indexers: Vec<Box<dyn Indexer>> = vec![
             Box::new(TextIndexer),
             Box::new(ExifIndexer),
-            // Box::new(PdfIndexer),
+            Box::new(PdfIndexer),
             Box::new(PptxIndexer),
             Box::new(CsvIndexer),
             Box::new(SpreadsheetIndexer),
@@ -66,33 +84,8 @@ impl Default for Analyzer {
         );
 
         Analyzer {
-            supported_extensions: supported_extensions,
+            supported_extensions,
+            indexers,
         }
     }
-}
-
-static INDEXERS: Lazy<Vec<Box<dyn Indexer>>> = Lazy::new(|| {
-    let indexers: Vec<Box<dyn Indexer>> = vec![
-        Box::new(TextIndexer),
-        Box::new(ExifIndexer),
-        // Box::new(PdfIndexer),
-        Box::new(MobileNetV2Indexer),
-        Box::new(PptxIndexer),
-        Box::new(CsvIndexer),
-        Box::new(SpreadsheetIndexer),
-    ];
-    indexers
-});
-
-#[instrument(skip(file_to_process))]
-pub async fn analyze(extension: OsString, file_to_process: FileCandidate) -> Vec<DocumentSchema> {
-    let processing_task = tokio::task::spawn_blocking(move || {
-        INDEXERS
-            .iter()
-            .filter(|indexer| indexer.supports_extension(extension.as_os_str()))
-            .filter_map(|indexer| indexer.index_file(&file_to_process).ok())
-            .collect()
-    });
-
-    processing_task.await.unwrap()
 }

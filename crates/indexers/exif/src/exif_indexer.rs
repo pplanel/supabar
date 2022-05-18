@@ -36,7 +36,7 @@ impl Indexer for ExifIndexer {
         let path = file_to_process.path.to_str().unwrap();
         span!(Level::INFO, "exif_indexer: indexing image file", path).in_scope(|| {
             let reader = span!(Level::INFO, "exif_indexer: Loading exif data from image from memory").in_scope(|| {
-                exif::Reader::new(&mut Cursor::new(&file_to_process.contents)).with_context(|| {
+                exif::Reader::new().read_from_container(&mut Cursor::new(&file_to_process.contents)).with_context(|| {
                     contracts::error::log_and_return_error_string(format!(
                         "exif_indexer: Failed to initialize exif reader for file at path: {:?}",
                         file_to_process.path
@@ -120,7 +120,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_indexing_exif_file() {
-        let test_file_path = Path::new("../../../test_files/IMG_2551.jpeg");
+        let test_file_path = Path::new("../test_files/IMG_2551.jpeg");
         let indexed_document = ExifIndexer
             .index_file(&new_file_to_process(test_file_path).await)
             .unwrap();

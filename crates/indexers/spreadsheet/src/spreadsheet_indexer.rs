@@ -76,7 +76,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_indexing_spreadsheet_file() {
-        let test_file_path = Path::new("../../../test_files/Cats.xlsx");
+        let test_file_path = Path::new("../test_files/Cats.xlsx");
         let indexed_document = SpreadsheetIndexer
             .index_file(&new_file_to_process(test_file_path).await)
             .unwrap();
