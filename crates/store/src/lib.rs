@@ -1,6 +1,4 @@
 pub mod store;
-use tracing::Level;
-use tracing_subscriber::util::SubscriberInitExt;
 use walkdir::DirEntry;
 /// Checks if a file or directory is hidden
 pub fn is_hidden(entry: &DirEntry) -> bool {
@@ -9,12 +7,6 @@ pub fn is_hidden(entry: &DirEntry) -> bool {
         .to_str()
         .map(|s| s.starts_with('.'))
         .unwrap_or(false)
-}
-fn setup_global_subscriber() {
-    let _t = tracing_subscriber::fmt()
-        .with_max_level(Level::INFO)
-        .finish()
-        .try_init();
 }
 #[cfg(test)]
 mod tests {
@@ -27,7 +19,6 @@ mod tests {
 
     #[tokio::test]
     async fn it_works() -> Result<(), Box<dyn std::error::Error>> {
-        super::setup_global_subscriber();
         let temp_dir = tempfile::TempDir::new_in(".")?;
         let db = sled::open(temp_dir.path().join("db"))?;
         let store = pallet::Store::builder()

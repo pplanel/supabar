@@ -8,13 +8,15 @@ edition.workspace = true
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [dependencies]
+contracts = { path = "../contracts" }
 store = { path = "../store" }
+prisma-client-rust-cli.workspace = true
+prisma-client-rust.workspace = true
 gio = "0.15.11"
 standard_paths = "1.1.0"
-sea-orm = { version = "^0", features = [ "sqlx-sqlite", "runtime-tokio-rustls", "macros", "debug-print" ] }
 whoami = "1.2.1"
 toml = "0.5.9"
-int-enum = "0.4.0"
+int-enum.workspace = true
 once_cell.workspace = true
 tokio.workspace = true
 async-trait.workspace = true
@@ -28,6 +30,8 @@ lazy_static.workspace = true
 anyhow.workspace = true
 serde.workspace = true
 thiserror.workspace = true
+bigdecimal = "0.3.0"
+hostname = "0.3.1"
 
 [dependencies.uuid]
 version = "1.0.0"
@@ -35,4 +39,9 @@ features = [
     "v4",                # Lets you generate random UUIDs
     "fast-rng",          # Use a faster (but still sufficiently random) RNG
     "macro-diagnostics", # Enable better diagnostics for compile-time UUIDs
+    "serde"
 ]
+
+[[bin]]
+name = "prisma"
+path = "src/bin/prisma.rs"

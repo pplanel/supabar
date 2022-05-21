@@ -1,6 +1,3 @@
-#[macro_use]
-extern crate criterion;
-use criterion::async_executor::AsyncExecutor;
 use criterion::Criterion;
 use criterion::*;
 

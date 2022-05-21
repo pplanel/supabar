@@ -5,7 +5,8 @@ members = [
     "crates/core",
     "crates/store",
     "crates/indexers",
-    "crates/contracts"
+    "crates/contracts",
+    "apps/supabar"
 ]
 
 [workspace.package]
@@ -14,12 +15,13 @@ description = "The last launch bar"
 authors = ["Pedro Gabriel Planel"]
 edition = "2021"
 include = [
-    "crates/core/src/**/**",
+    "apps/supabar/**/**",
     "examples/**/**",
 ]
 license = "MIT OR Apache-2.0"
 
 [workspace.dependencies]
+int-enum = "0.4.0"
 once_cell = "1.10.0"
 tokio = { version = "1.18.2", features = ["full"] }
 async-trait = "0.1.53"
@@ -35,6 +37,9 @@ serde = { version = "1.0.137", features = ["derive"] }
 thiserror = "1.0.31"
 pallet = "0.7.0"
 sled = "0.34.7"
+prisma-client-rust = { git = "https://github.com/Brendonovich/prisma-client-rust", rev = "7b103ca7e422d2d5a8935818407fc0023f1b3ab8" }
+prisma-client-rust-cli = { git = "https://github.com/Brendonovich/prisma-client-rust", rev = "7b103ca7e422d2d5a8935818407fc0023f1b3ab8" }
+
 
 [package]
 name = "supabar"
@@ -50,6 +55,8 @@ tokio = { version = "1.18.2", features = ["full"] }
 tracing-subscriber = "0.3.11"
 rustyline = "9.1.2"
 rustyline-derive = "0.6.0"
+anyhow = "1.0.57"
+prisma-client-rust-cli.workspace = true
 
 [[example]]
 name = "cmd"

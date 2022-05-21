@@ -9,7 +9,7 @@ edition.workspace = true
 [dependencies]
 contracts = { path = "../contracts" }
 csv_indexer = { path = "csv" }
-docx_indexer = { path = "docx" }
+# docx_indexer = { path = "docx" }
 exif_indexer = { path = "exif" }
 mobile_net_v2_indexer = { path = "mobile_net_v2" }
 pdf_indexer = { path = "pdf" }

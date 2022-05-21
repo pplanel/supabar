@@ -95,7 +95,7 @@ impl Indexer for ExifIndexer {
 
             Ok(DocumentSchema {
                 name: file_to_process.path.file_name().unwrap().to_string_lossy().to_string(),
-                body: format!("{} {} {} {}", res.name, res.admin1, res.admin2, res.admin3),
+                body: format!("{} {} {}", res.name, res.admin1, res.admin2),
                 media_type: "exif".into(),
                 path: file_to_process.path(),
             })

@@ -12,3 +12,7 @@ resourcers/
 .idea/
 nohup.out
 *.pb
+test_files/
+node_modules/
+*.db*
+test_files

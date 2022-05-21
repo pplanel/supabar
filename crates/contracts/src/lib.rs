@@ -1,5 +1,4 @@
 use anyhow::Result;
-
 use std::ffi::{OsStr, OsString};
 
 use blake2b_simd::blake2b;

@@ -1,8 +1,9 @@
+use crate::runtime::Context;
+
 use super::{
     worker::{Worker, WorkerContext},
     JobError,
 };
-use crate::Context;
 use anyhow::Result;
 use int_enum::IntEnum;
 use serde::{Deserialize, Serialize};
@@ -46,7 +47,7 @@ impl Jobs {
             self.job_queue.push(job);
         }
     }
-    pub fn ingest_queue(&mut self, ctx: &Context, job: Box<dyn Job>) {
+    pub fn ingest_queue(&mut self, _ctx: &Context, job: Box<dyn Job>) {
         self.job_queue.push(job);
     }
     pub async fn complete(&mut self, ctx: &Context, job_id: String) {
@@ -67,7 +68,7 @@ impl Jobs {
         }
         ret
     }
-    pub async fn get_history(ctx: &Context) -> Result<() /*Vec<JobReport>*/, JobError> {
+    pub async fn get_history(_ctx: &Context) -> Result<() /*Vec<JobReport>*/, JobError> {
         // let db = &ctx.database;
         // let jobs = vec!['a'];
         // //   .job()
@@ -138,7 +139,7 @@ impl JobReport {
             seconds_elapsed: 0,
         }
     }
-    pub async fn create(&self, ctx: &Context) -> Result<(), JobError> {
+    pub async fn create<Context>(&self, _ctx: &Context) -> Result<(), JobError> {
         // let config = state::get();
         // ctx
         //   .database
@@ -154,7 +155,7 @@ impl JobReport {
         //   .await?;
         Ok(())
     }
-    pub async fn update(&self, ctx: &Context) -> Result<(), JobError> {
+    pub async fn update<Context>(&self, _ctx: &Context) -> Result<(), JobError> {
         // ctx
         //   .database
         //   .job()

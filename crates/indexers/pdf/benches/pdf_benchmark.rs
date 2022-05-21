@@ -1,7 +1,3 @@
-#[macro_use]
-extern crate criterion;
-use criterion::async_executor::AsyncExecutor;
-use criterion::Criterion;
 use criterion::*;
 
 use contracts::candidate::new_file_to_process;
@@ -17,7 +13,7 @@ fn bench_indexing_pdf_file(c: &mut Criterion) {
     let ftp = rt.block_on(new_file_to_process(test_file_path));
     group.bench_function("indexing_pdf_file", |b| {
         b.iter(|| {
-            let indexed_document = PdfIndexer.index_file(&ftp).unwrap();
+            let _indexed_document = PdfIndexer.index_file(&ftp).unwrap();
         });
     });
     group.finish();

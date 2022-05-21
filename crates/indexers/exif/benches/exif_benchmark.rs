@@ -1,7 +1,3 @@
-#[macro_use]
-extern crate criterion;
-use criterion::async_executor::AsyncExecutor;
-use criterion::Criterion;
 use criterion::*;
 
 use contracts::candidate::new_file_to_process;

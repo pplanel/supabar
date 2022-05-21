@@ -4,13 +4,14 @@ use std::{collections::HashMap, path::PathBuf};
 const APP_NAME: &str = "supabar";
 const APP_ORG: &str = "superluminal";
 
+#[derive(Debug)]
 pub struct LocalInfo {
     app_data: PathBuf,
     app_config: PathBuf,
 }
 
 impl LocalInfo {
-    pub fn new() -> Self {
+    pub fn get() -> Self {
         let sl = StandardPaths::new(APP_NAME, APP_ORG);
         let app_data = sl
             .writable_location(LocationType::AppDataLocation)
@@ -28,7 +29,17 @@ impl LocalInfo {
             app_config: config,
         }
     }
-
+    pub fn get_user_data_dir(&self, username: &str) -> PathBuf {
+        PathBuf::from(format!("{}/{}", self.app_data.to_string_lossy(), username))
+    }
+    pub fn get_user_index_dir(&self, username: &str) -> PathBuf {
+        PathBuf::from(format!(
+            "{}/{}/{}",
+            self.app_data.to_string_lossy(),
+            username,
+            "idx"
+        ))
+    }
     pub fn to_hashmap(self) -> HashMap<String, PathBuf> {
         HashMap::from([
             (String::from("AppDataLocation"), self.app_data),
@@ -38,6 +49,6 @@ impl LocalInfo {
 }
 impl Default for LocalInfo {
     fn default() -> Self {
-        Self::new()
+        Self::get()
     }
 }

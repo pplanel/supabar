@@ -1,0 +1,133 @@
+datasource db {
+  provider = "sqlite"
+  url      = "file:dev.db"
+}
+
+generator client {
+  provider = "cargo run --bin prisma --"
+  output   = "./src/prisma.rs"
+}
+
+model Migration {
+  id            Int      @id @default(autoincrement())
+  name          String
+  checksum      String   @unique
+  steps_applied Int      @default(0)
+  applied_at    DateTime @default(now())
+
+  @@map("_migrations")
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  username     String @unique
+  index_dir    String
+  data_dir     String
+  hostname     String?
+  platform     Int      @default(0)
+  date_created DateTime @default(now())
+
+  jobs Job[]
+
+  @@map("users")
+}
+
+model File {
+  id                 Int      @id @default(autoincrement())
+  // content addressable storage id - sha256
+  // this does not need to be unique, as incoming replicas will always ignore if at least one exists
+  cas_id             String   @unique
+  // full byte contents digested into sha256 checksum
+  integrity_checksum String?  @unique
+  // basic metadata
+  kind               Int      @default(0)
+  size_in_bytes      String
+  key_id             Int?
+  // handy ways to mark a file
+  hidden             Boolean  @default(false)
+  favorite           Boolean  @default(false)
+  important          Boolean  @default(false)
+  // if we have generated preview media for this file
+  has_thumbnail      Boolean  @default(false)
+  has_thumbstrip     Boolean  @default(false)
+  has_video_preview  Boolean  @default(false)
+  // integration with ipfs
+  ipfs_id            String?
+  // plain text comment
+  comment            String?
+  // the original known creation date of this file
+  date_created       DateTime @default(now())
+  // the last time this file was modified
+  date_modified      DateTime @default(now())
+  // when this file was first indexed
+  date_indexed       DateTime @default(now())
+
+  tags       TagOnFile[]
+  media_data MediaData?
+
+  @@map("files")
+}
+
+model MediaData {
+  id                      Int     @id
+  pixel_width             Int?
+  pixel_height            Int?
+  longitude               Float?
+  latitude                Float?
+  fps                     Int?
+  capture_device_make     String? // eg: "Apple"
+  capture_device_model    String? // eg: "iPhone 12"
+  capture_device_software String? // eg: "12.1.1"
+  duration_seconds        Int?
+  codecs                  String? // eg: "h264,acc"
+  streams                 Int?
+
+  // change this relation to File after testing
+  files File? @relation(fields: [id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@map("media_data")
+}
+
+model Tag {
+  id              Int      @id @default(autoincrement())
+  pub_id          String   @unique
+  name            String?
+  total_files     Int?     @default(0)
+  redundancy_goal Int?     @default(1)
+  date_created    DateTime @default(now())
+  date_modified   DateTime @default(now())
+
+  tag_files TagOnFile[]
+  @@map("tags")
+}
+
+model TagOnFile {
+  date_created DateTime @default(now())
+
+  tag_id Int
+  tag    Tag @relation(fields: [tag_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  file_id Int
+  file    File @relation(fields: [file_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([tag_id, file_id])
+  @@map("tags_on_files")
+}
+
+model Job {
+  id      String @id
+  name    String
+  node_id Int
+  action  Int
+  status  Int    @default(0)
+
+  task_count           Int      @default(1)
+  completed_task_count Int      @default(0)
+  date_created         DateTime @default(now())
+  date_modified        DateTime @default(now())
+  seconds_elapsed      Int      @default(0)
+
+  User   User? @relation(fields: [userId], references: [id])
+  userId Int?
+  @@map("jobs")
+}

@@ -1,5 +1,3 @@
-extern crate core as supabar;
-
 use rustyline::hint::Hinter;
 use std::collections::HashSet;
 
@@ -9,42 +7,7 @@ use rustyline::{
     Cmd, ConditionalEventHandler, Context, Event, EventContext, EventHandler, KeyEvent, RepeatCount,
 };
 use rustyline_derive::{Completer, Helper, Highlighter, Validator};
-use supabar::{ClientCommand, Handler, LocalInfo, Response, Runtime, UserSettings};
-
-#[tokio::main]
-async fn main() -> anyhow::Result<()> {
-    tracing_subscriber::fmt::init();
-
-    let config = LocalInfo::get();
-    let user_settings = UserSettings::new(&config)?;
-
-    let runtime = Runtime::builder()
-        .with_config(config)
-        .with_user_settings(user_settings);
-
-    let (mut core, mut core_events) = runtime.build().await?;
-    let core_handler = core.get_handler();
-    tokio::spawn(async move {
-        core.start().await;
-    });
-
-    tokio::spawn(async move {
-        while let Some(event) = core_events.recv().await {
-            match event {
-                supabar::runtime::Event::Log { message } => println!("Log msg {}", message),
-                supabar::runtime::Event::DatabaseDisconnected { reason } => {
-                    println!(
-                        "Database was disconnected. Reason({})",
-                        reason.unwrap_or_else(|| "Wlese".into())
-                    )
-                }
-                _ => {}
-            }
-        }
-    });
-    run_cli(&core_handler).await;
-    Ok(())
-}
+use supabar::{ClientCommand, ClientQuery, Handler, Response};
 
 struct TabEventHandler;
 impl ConditionalEventHandler for TabEventHandler {
@@ -122,7 +85,7 @@ impl Hinter for DIYHinter {
     }
 }
 
-async fn run_cli(core_handler: &Handler) {
+pub async fn run_cli(core_handler: &Handler) {
     let h = DIYHinter {
         hints: get_app_hints(core_handler).await,
     };
@@ -161,15 +124,14 @@ async fn run_cli(core_handler: &Handler) {
 }
 
 async fn get_app_hints(core_handler: &Handler) -> HashSet<CommandHint> {
-    match core_handler
-        .query(supabar::ClientQuery::ListApplications)
-        .await
-    {
+    match core_handler.query(ClientQuery::ListApplications).await {
         Ok(Response::ListApplications { applications }) => {
-            HashSet::from_iter(applications.into_iter().map(|app| {
-                let up_to = app.clone();
-                CommandHint::new(app.as_str(), &up_to)
-            }))
+            applications
+                .into_iter()
+                .fold(HashSet::new(), |mut hs, app| {
+                    hs.insert(CommandHint::new(&app.as_str(), app.as_str()));
+                    hs
+                })
         }
         _ => panic!("asd"),
     }

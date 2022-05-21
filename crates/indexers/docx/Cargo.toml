@@ -11,4 +11,4 @@ contracts = { path = "../../contracts" }
 anyhow.workspace =true
 tracing.workspace =true
 tokio.workspace = true
-docx = "1.1.2"
+# docx = "1.1.2"
