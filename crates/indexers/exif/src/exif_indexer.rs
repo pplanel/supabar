@@ -13,6 +13,7 @@ lazy_static! {
     static ref GEOCODER: ReverseGeocoder<'static> = ReverseGeocoder::new(&LOCATIONS);
 }
 
+#[derive(Debug)]
 pub struct ExifIndexer;
 
 impl Indexer for ExifIndexer {

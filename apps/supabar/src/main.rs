@@ -15,6 +15,7 @@ async fn main() -> Result<()> {
         .with_user_settings(user_settings);
 
     let (mut core, mut _core_events) = runtime.build().await?;
+    core.setup().await?;
     let core_handler = core.get_handler();
 
     tokio::spawn(async move {

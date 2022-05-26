@@ -7,6 +7,7 @@ use tracing::{span, Level};
 
 use calamine::{open_workbook, Reader, Xlsx};
 
+#[derive(Debug)]
 pub struct SpreadsheetIndexer;
 
 impl Indexer for SpreadsheetIndexer {

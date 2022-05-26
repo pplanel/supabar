@@ -5,6 +5,7 @@ use std::ffi::{OsStr, OsString};
 use std::str;
 use tracing::{span, Level};
 
+#[derive(Debug)]
 pub struct TextIndexer;
 
 impl Indexer for TextIndexer {

@@ -7,6 +7,7 @@ use tracing::{span, Level};
 
 use regex::Regex;
 
+#[derive(Debug)]
 pub struct PdfIndexer;
 
 impl Indexer for PdfIndexer {

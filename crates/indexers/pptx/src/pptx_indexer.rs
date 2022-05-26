@@ -9,6 +9,7 @@ use msoffice_pptx::document::PPTXDocument;
 use msoffice_pptx::pml::ShapeGroup;
 use msoffice_shared::drawingml::TextRun;
 
+#[derive(Debug)]
 pub struct PptxIndexer;
 
 impl Indexer for PptxIndexer {

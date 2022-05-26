@@ -8,6 +8,7 @@ edition.workspace = true
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [dependencies]
+indexers = { path="../indexers"}
 contracts = { path = "../contracts" }
 store = { path = "../store" }
 prisma-client-rust-cli.workspace = true
@@ -32,6 +33,9 @@ serde.workspace = true
 thiserror.workspace = true
 bigdecimal = "0.3.0"
 hostname = "0.3.1"
+home = "0.5.3"
+jwalk = "0.6.0"
+rayon = "1.5.3"
 
 [dependencies.uuid]
 version = "1.0.0"

@@ -13,7 +13,7 @@ use tokio::sync::Mutex;
 const MAX_WORKERS: usize = 4;
 
 #[async_trait::async_trait]
-pub trait Job: Send + Sync + Debug {
+pub trait Job: Send + Sync {
     async fn run(&self, ctx: WorkerContext) -> Result<()>;
     fn name(&self) -> &'static str;
 }

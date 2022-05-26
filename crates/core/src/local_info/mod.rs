@@ -30,15 +30,24 @@ impl LocalInfo {
         }
     }
     pub fn get_user_data_dir(&self, username: &str) -> PathBuf {
-        PathBuf::from(format!("{}/{}", self.app_data.to_string_lossy(), username))
+        let data_dir = PathBuf::from(format!("{}/{}/", self.app_data.to_string_lossy(), username));
+        if !data_dir.exists() {
+            let _ = std::fs::create_dir_all(&data_dir);
+        }
+        data_dir
     }
     pub fn get_user_index_dir(&self, username: &str) -> PathBuf {
-        PathBuf::from(format!(
-            "{}/{}/{}",
+        let user_index_dir = PathBuf::from(format!(
+            "{}/{}/{}/",
             self.app_data.to_string_lossy(),
             username,
             "idx"
-        ))
+        ));
+
+        if !user_index_dir.exists() {
+            let _ = std::fs::create_dir_all(&user_index_dir);
+        }
+        user_index_dir
     }
     pub fn to_hashmap(self) -> HashMap<String, PathBuf> {
         HashMap::from([

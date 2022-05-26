@@ -12,6 +12,8 @@ use text_indexer::text_indexer::TextIndexer;
 use contracts::indexer::{DocumentSchema, Indexer};
 
 /// Container for all Indexers
+
+#[derive(Debug)]
 pub struct Analyzer {
     indexers: Vec<Box<dyn Indexer>>,
     pub supported_extensions: HashSet<OsString>,

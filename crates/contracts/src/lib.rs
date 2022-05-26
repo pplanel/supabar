@@ -74,7 +74,7 @@ pub mod indexer {
     }
 
     /// Each Indexer needs to be able to say if a file extension is supported and extract information from a supported file
-    pub trait Indexer: Send + Sync {
+    pub trait Indexer: Send + Sync + Debug {
         /// If the Indexer supports a file extension
         /// Eg: PdfIndexer supports .pdf extensions
         fn supports_extension(&self, extension: &OsStr) -> bool;

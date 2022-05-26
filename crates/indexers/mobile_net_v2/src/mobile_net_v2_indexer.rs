@@ -67,31 +67,25 @@ static IMAGE_FORMATS: Lazy<HashMap<OsString, image::ImageFormat>> = Lazy::new(||
     map
 });
 
+#[derive(Debug)]
 pub struct MobileNetV2Indexer;
 
 impl Indexer for MobileNetV2Indexer {
     // https://github.com/image-rs/image#21-supported-image-formats
     fn supports_extension(&self, extension: &OsStr) -> bool {
         extension == OsStr::new("tif")
-            || extension == OsStr::new("tiff")
             || extension == OsStr::new("jpg")
             || extension == OsStr::new("jpeg")
             || extension == OsStr::new("png")
             || extension == OsStr::new("bmp")
-            || extension == OsStr::new("ico")
-            || extension == OsStr::new("gif")
     }
 
     fn supported_extensions(&self) -> Vec<OsString> {
         vec![
-            OsString::from("tif"),
-            OsString::from("tiff"),
             OsString::from("jpg"),
             OsString::from("jpeg"),
             OsString::from("png"),
             OsString::from("bmp"),
-            OsString::from("ico"),
-            OsString::from("gif"),
         ]
     }
 

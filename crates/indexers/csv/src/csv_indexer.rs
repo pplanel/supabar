@@ -5,6 +5,7 @@ use std::ffi::{OsStr, OsString};
 use std::io::Cursor;
 use tracing::{span, Level};
 
+#[derive(Debug)]
 pub struct CsvIndexer;
 
 impl Indexer for CsvIndexer {

@@ -21,7 +21,7 @@ use std::fmt;
 use std::ops::Deref;
 use std::path::Path;
 use std::sync::Arc;
-static DATAMODEL_STR : & 'static str = "datasource db {\n  provider = \"sqlite\"\n  url      = \"file:dev.db\"\n}\n\ngenerator client {\n  provider = \"cargo run --bin prisma --\"\n  output   = \"./src/prisma.rs\"\n}\n\nmodel Migration {\n  id            Int      @id @default(autoincrement())\n  name          String\n  checksum      String   @unique\n  steps_applied Int      @default(0)\n  applied_at    DateTime @default(now())\n\n  @@map(\"_migrations\")\n}\n\nmodel User {\n  id           Int      @id @default(autoincrement())\n  username     String @unique\n  index_dir    String\n  data_dir     String\n  hostname     String?\n  platform     Int      @default(0)\n  date_created DateTime @default(now())\n\n  jobs Job[]\n\n  @@map(\"users\")\n}\n\nmodel File {\n  id                 Int      @id @default(autoincrement())\n  // content addressable storage id - sha256\n  // this does not need to be unique, as incoming replicas will always ignore if at least one exists\n  cas_id             String   @unique\n  // full byte contents digested into sha256 checksum\n  integrity_checksum String?  @unique\n  // basic metadata\n  kind               Int      @default(0)\n  size_in_bytes      String\n  key_id             Int?\n  // handy ways to mark a file\n  hidden             Boolean  @default(false)\n  favorite           Boolean  @default(false)\n  important          Boolean  @default(false)\n  // if we have generated preview media for this file\n  has_thumbnail      Boolean  @default(false)\n  has_thumbstrip     Boolean  @default(false)\n  has_video_preview  Boolean  @default(false)\n  // integration with ipfs\n  ipfs_id            String?\n  // plain text comment\n  comment            String?\n  // the original known creation date of this file\n  date_created       DateTime @default(now())\n  // the last time this file was modified\n  date_modified      DateTime @default(now())\n  // when this file was first indexed\n  date_indexed       DateTime @default(now())\n\n  tags       TagOnFile[]\n  media_data MediaData?\n\n  @@map(\"files\")\n}\n\nmodel MediaData {\n  id                      Int     @id\n  pixel_width             Int?\n  pixel_height            Int?\n  longitude               Float?\n  latitude                Float?\n  fps                     Int?\n  capture_device_make     String? // eg: \"Apple\"\n  capture_device_model    String? // eg: \"iPhone 12\"\n  capture_device_software String? // eg: \"12.1.1\"\n  duration_seconds        Int?\n  codecs                  String? // eg: \"h264,acc\"\n  streams                 Int?\n\n  // change this relation to File after testing\n  files File? @relation(fields: [id], references: [id], onDelete: Cascade, onUpdate: Cascade)\n\n  @@map(\"media_data\")\n}\n\nmodel Tag {\n  id              Int      @id @default(autoincrement())\n  pub_id          String   @unique\n  name            String?\n  total_files     Int?     @default(0)\n  redundancy_goal Int?     @default(1)\n  date_created    DateTime @default(now())\n  date_modified   DateTime @default(now())\n\n  tag_files TagOnFile[]\n  @@map(\"tags\")\n}\n\nmodel TagOnFile {\n  date_created DateTime @default(now())\n\n  tag_id Int\n  tag    Tag @relation(fields: [tag_id], references: [id], onDelete: NoAction, onUpdate: NoAction)\n\n  file_id Int\n  file    File @relation(fields: [file_id], references: [id], onDelete: NoAction, onUpdate: NoAction)\n\n  @@id([tag_id, file_id])\n  @@map(\"tags_on_files\")\n}\n\nmodel Job {\n  id      String @id\n  name    String\n  node_id Int\n  action  Int\n  status  Int    @default(0)\n\n  task_count           Int      @default(1)\n  completed_task_count Int      @default(0)\n  date_created         DateTime @default(now())\n  date_modified        DateTime @default(now())\n  seconds_elapsed      Int      @default(0)\n\n  User   User? @relation(fields: [userId], references: [id])\n  userId Int?\n  @@map(\"jobs\")\n}\n" ;
+static DATAMODEL_STR : & 'static str = "datasource db {\n  provider = \"sqlite\"\n  url      = \"file:dev.db\"\n}\n\ngenerator client {\n  provider = \"cargo run --bin prisma --\"\n  output   = \"./src/prisma.rs\"\n}\n\nmodel Migration {\n  id            Int      @id @default(autoincrement())\n  name          String\n  checksum      String   @unique\n  steps_applied Int      @default(0)\n  applied_at    DateTime @default(now())\n\n  @@map(\"_migrations\")\n}\n\nmodel User {\n  id           Int      @id @default(autoincrement())\n  username     String @unique\n  home_dir    String\n  index_dir    String\n  data_dir     String\n  hostname     String?\n  platform     Int      @default(0)\n  date_created DateTime @default(now())\n\n  jobs Job[]\n\n  @@map(\"users\")\n}\n\nmodel File {\n  id                 Int      @id @default(autoincrement())\n  // content addressable storage id - sha256\n  // this does not need to be unique, as incoming replicas will always ignore if at least one exists\n  cas_id             String   @unique\n  // full byte contents digested into sha256 checksum\n  integrity_checksum String?  @unique\n  // basic metadata\n  kind               Int      @default(0)\n  size_in_bytes      String\n  key_id             Int?\n  // handy ways to mark a file\n  hidden             Boolean  @default(false)\n  favorite           Boolean  @default(false)\n  important          Boolean  @default(false)\n  // if we have generated preview media for this file\n  has_thumbnail      Boolean  @default(false)\n  has_thumbstrip     Boolean  @default(false)\n  has_video_preview  Boolean  @default(false)\n  // integration with ipfs\n  ipfs_id            String?\n  // plain text comment\n  comment            String?\n  // the original known creation date of this file\n  date_created       DateTime @default(now())\n  // the last time this file was modified\n  date_modified      DateTime @default(now())\n  // when this file was first indexed\n  date_indexed       DateTime @default(now())\n\n  tags       TagOnFile[]\n  media_data MediaData?\n\n  @@map(\"files\")\n}\n\nmodel MediaData {\n  id                      Int     @id\n  pixel_width             Int?\n  pixel_height            Int?\n  longitude               Float?\n  latitude                Float?\n  fps                     Int?\n  capture_device_make     String? // eg: \"Apple\"\n  capture_device_model    String? // eg: \"iPhone 12\"\n  capture_device_software String? // eg: \"12.1.1\"\n  duration_seconds        Int?\n  codecs                  String? // eg: \"h264,acc\"\n  streams                 Int?\n\n  // change this relation to File after testing\n  files File? @relation(fields: [id], references: [id], onDelete: Cascade, onUpdate: Cascade)\n\n  @@map(\"media_data\")\n}\n\nmodel Tag {\n  id              Int      @id @default(autoincrement())\n  pub_id          String   @unique\n  name            String?\n  total_files     Int?     @default(0)\n  redundancy_goal Int?     @default(1)\n  date_created    DateTime @default(now())\n  date_modified   DateTime @default(now())\n\n  tag_files TagOnFile[]\n  @@map(\"tags\")\n}\n\nmodel TagOnFile {\n  date_created DateTime @default(now())\n\n  tag_id Int\n  tag    Tag @relation(fields: [tag_id], references: [id], onDelete: NoAction, onUpdate: NoAction)\n\n  file_id Int\n  file    File @relation(fields: [file_id], references: [id], onDelete: NoAction, onUpdate: NoAction)\n\n  @@id([tag_id, file_id])\n  @@map(\"tags_on_files\")\n}\n\nmodel Job {\n  id      String @id\n  name    String\n  node_id Int\n  action  Int\n  status  Int    @default(0)\n\n  task_count           Int      @default(1)\n  completed_task_count Int      @default(0)\n  date_created         DateTime @default(now())\n  date_modified        DateTime @default(now())\n  seconds_elapsed      Int      @default(0)\n\n  User   User? @relation(fields: [userId], references: [id])\n  userId Int?\n  @@map(\"jobs\")\n}\n" ;
 pub struct PrismaClient {
     executor: Box<dyn QueryExecutor + Send + Sync + 'static>,
     query_schema: Arc<QuerySchema>,
@@ -1455,6 +1455,55 @@ pub mod user {
             }
         }
     }
+    pub mod home_dir {
+        use super::super::*;
+        use super::{Cursor, OrderByParam, SetParam, UniqueWhereParam, WhereParam, WithParam};
+        pub fn set<T: From<Set>>(value: String) -> T {
+            Set(value).into()
+        }
+        pub fn equals(value: String) -> WhereParam {
+            WhereParam::HomeDirEquals(value).into()
+        }
+        pub fn order(direction: Direction) -> OrderByParam {
+            OrderByParam::HomeDir(direction)
+        }
+        pub fn in_vec(value: Vec<String>) -> WhereParam {
+            WhereParam::HomeDirInVec(value)
+        }
+        pub fn not_in_vec(value: Vec<String>) -> WhereParam {
+            WhereParam::HomeDirNotInVec(value)
+        }
+        pub fn lt(value: String) -> WhereParam {
+            WhereParam::HomeDirLt(value)
+        }
+        pub fn lte(value: String) -> WhereParam {
+            WhereParam::HomeDirLte(value)
+        }
+        pub fn gt(value: String) -> WhereParam {
+            WhereParam::HomeDirGt(value)
+        }
+        pub fn gte(value: String) -> WhereParam {
+            WhereParam::HomeDirGte(value)
+        }
+        pub fn contains(value: String) -> WhereParam {
+            WhereParam::HomeDirContains(value)
+        }
+        pub fn starts_with(value: String) -> WhereParam {
+            WhereParam::HomeDirStartsWith(value)
+        }
+        pub fn ends_with(value: String) -> WhereParam {
+            WhereParam::HomeDirEndsWith(value)
+        }
+        pub fn not(value: String) -> WhereParam {
+            WhereParam::HomeDirNot(value)
+        }
+        pub struct Set(String);
+        impl From<Set> for SetParam {
+            fn from(value: Set) -> Self {
+                Self::SetHomeDir(value.0)
+            }
+        }
+    }
     pub mod index_dir {
         use super::super::*;
         use super::{Cursor, OrderByParam, SetParam, UniqueWhereParam, WhereParam, WithParam};
@@ -1726,6 +1775,7 @@ pub mod user {
         [
             "id",
             "username",
+            "home_dir",
             "index_dir",
             "data_dir",
             "hostname",
@@ -1745,6 +1795,8 @@ pub mod user {
         pub id: i32,
         #[serde(rename = "username")]
         pub username: String,
+        #[serde(rename = "home_dir")]
+        pub home_dir: String,
         #[serde(rename = "index_dir")]
         pub index_dir: String,
         #[serde(rename = "data_dir")]
@@ -1802,6 +1854,7 @@ pub mod user {
         MultiplyId(i32),
         DivideId(i32),
         SetUsername(String),
+        SetHomeDir(String),
         SetIndexDir(String),
         SetDataDir(String),
         SetHostname(Option<String>),
@@ -1861,6 +1914,9 @@ pub mod user {
                 ),
                 SetParam::SetUsername(value) => {
                     ("username".to_string(), PrismaValue::String(value).into())
+                }
+                SetParam::SetHomeDir(value) => {
+                    ("home_dir".to_string(), PrismaValue::String(value).into())
                 }
                 SetParam::SetIndexDir(value) => {
                     ("index_dir".to_string(), PrismaValue::String(value).into())
@@ -1969,6 +2025,7 @@ pub mod user {
     pub enum OrderByParam {
         Id(Direction),
         Username(Direction),
+        HomeDir(Direction),
         IndexDir(Direction),
         DataDir(Direction),
         Hostname(Direction),
@@ -1983,6 +2040,10 @@ pub mod user {
                 }
                 Self::Username(direction) => (
                     "username".to_string(),
+                    QueryValue::String(direction.to_string()),
+                ),
+                Self::HomeDir(direction) => (
+                    "home_dir".to_string(),
                     QueryValue::String(direction.to_string()),
                 ),
                 Self::IndexDir(direction) => (
@@ -2011,6 +2072,7 @@ pub mod user {
     pub enum Cursor {
         Id(i32),
         Username(String),
+        HomeDir(String),
         IndexDir(String),
         DataDir(String),
         Hostname(String),
@@ -2023,6 +2085,9 @@ pub mod user {
                 Self::Id(cursor) => ("id".to_string(), PrismaValue::Int(cursor as i64).into()),
                 Self::Username(cursor) => {
                     ("username".to_string(), PrismaValue::String(cursor).into())
+                }
+                Self::HomeDir(cursor) => {
+                    ("home_dir".to_string(), PrismaValue::String(cursor).into())
                 }
                 Self::IndexDir(cursor) => {
                     ("index_dir".to_string(), PrismaValue::String(cursor).into())
@@ -2067,6 +2132,17 @@ pub mod user {
         UsernameStartsWith(String),
         UsernameEndsWith(String),
         UsernameNot(String),
+        HomeDirEquals(String),
+        HomeDirInVec(Vec<String>),
+        HomeDirNotInVec(Vec<String>),
+        HomeDirLt(String),
+        HomeDirLte(String),
+        HomeDirGt(String),
+        HomeDirGte(String),
+        HomeDirContains(String),
+        HomeDirStartsWith(String),
+        HomeDirEndsWith(String),
+        HomeDirNot(String),
         IndexDirEquals(String),
         IndexDirInVec(Vec<String>),
         IndexDirNotInVec(Vec<String>),
@@ -2322,6 +2398,93 @@ pub mod user {
                 ),
                 Self::UsernameNot(value) => (
                     "username".to_string(),
+                    SerializedWhereValue::Object(vec![(
+                        "not".to_string(),
+                        PrismaValue::String(value).into(),
+                    )]),
+                ),
+                Self::HomeDirEquals(value) => (
+                    "home_dir".to_string(),
+                    SerializedWhereValue::Object(vec![(
+                        "equals".to_string(),
+                        PrismaValue::String(value).into(),
+                    )]),
+                ),
+                Self::HomeDirInVec(value) => (
+                    "home_dir".to_string(),
+                    SerializedWhereValue::Object(vec![(
+                        "in".to_string(),
+                        QueryValue::List(
+                            value
+                                .into_iter()
+                                .map(|v| PrismaValue::String(v).into())
+                                .collect(),
+                        ),
+                    )]),
+                ),
+                Self::HomeDirNotInVec(value) => (
+                    "home_dir".to_string(),
+                    SerializedWhereValue::Object(vec![(
+                        "notIn".to_string(),
+                        QueryValue::List(
+                            value
+                                .into_iter()
+                                .map(|v| PrismaValue::String(v).into())
+                                .collect(),
+                        ),
+                    )]),
+                ),
+                Self::HomeDirLt(value) => (
+                    "home_dir".to_string(),
+                    SerializedWhereValue::Object(vec![(
+                        "lt".to_string(),
+                        PrismaValue::String(value).into(),
+                    )]),
+                ),
+                Self::HomeDirLte(value) => (
+                    "home_dir".to_string(),
+                    SerializedWhereValue::Object(vec![(
+                        "lte".to_string(),
+                        PrismaValue::String(value).into(),
+                    )]),
+                ),
+                Self::HomeDirGt(value) => (
+                    "home_dir".to_string(),
+                    SerializedWhereValue::Object(vec![(
+                        "gt".to_string(),
+                        PrismaValue::String(value).into(),
+                    )]),
+                ),
+                Self::HomeDirGte(value) => (
+                    "home_dir".to_string(),
+                    SerializedWhereValue::Object(vec![(
+                        "gte".to_string(),
+                        PrismaValue::String(value).into(),
+                    )]),
+                ),
+                Self::HomeDirContains(value) => (
+                    "home_dir".to_string(),
+                    SerializedWhereValue::Object(vec![(
+                        "contains".to_string(),
+                        PrismaValue::String(value).into(),
+                    )]),
+                ),
+                Self::HomeDirStartsWith(value) => (
+                    "home_dir".to_string(),
+                    SerializedWhereValue::Object(vec![(
+                        "startsWith".to_string(),
+                        PrismaValue::String(value).into(),
+                    )]),
+                ),
+                Self::HomeDirEndsWith(value) => (
+                    "home_dir".to_string(),
+                    SerializedWhereValue::Object(vec![(
+                        "endsWith".to_string(),
+                        PrismaValue::String(value).into(),
+                    )]),
+                ),
+                Self::HomeDirNot(value) => (
+                    "home_dir".to_string(),
                     SerializedWhereValue::Object(vec![(
                         "not".to_string(),
                         PrismaValue::String(value).into(),
@@ -2964,11 +3127,13 @@ pub mod user {
         pub fn create(
             mut self,
             username: username::Set,
+            home_dir: home_dir::Set,
             index_dir: index_dir::Set,
             data_dir: data_dir::Set,
             mut params: Vec<SetParam>,
         ) -> Self {
             params.push(username.into());
+            params.push(home_dir.into());
             params.push(index_dir.into());
             params.push(data_dir.into());
             self.args = self.args.create(params);
@@ -3027,11 +3192,13 @@ pub mod user {
         pub fn create(
             &self,
             username: username::Set,
+            home_dir: home_dir::Set,
             index_dir: index_dir::Set,
             data_dir: data_dir::Set,
             mut params: Vec<SetParam>,
         ) -> Create {
             params.push(username.into());
+            params.push(home_dir.into());
             params.push(index_dir.into());
             params.push(data_dir.into());
             Create {
@@ -13949,6 +14116,8 @@ pub enum UserScalarFieldEnum {
     Id,
     #[serde(rename = "username")]
     Username,
+    #[serde(rename = "home_dir")]
+    HomeDir,
     #[serde(rename = "index_dir")]
     IndexDir,
     #[serde(rename = "data_dir")]
@@ -13965,6 +14134,7 @@ impl ToString for UserScalarFieldEnum {
         match self {
             Self::Id => "id".to_string(),
             Self::Username => "username".to_string(),
+            Self::HomeDir => "home_dir".to_string(),
             Self::IndexDir => "index_dir".to_string(),
             Self::DataDir => "data_dir".to_string(),
             Self::Hostname => "hostname".to_string(),

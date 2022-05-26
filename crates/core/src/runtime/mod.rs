@@ -14,6 +14,7 @@ use tracing::{debug, info, instrument};
 use crate::job::jobs::{Job, Jobs};
 use crate::local_info::LocalInfo;
 use crate::prisma::PrismaClient;
+use crate::user::index::IndexHome;
 use crate::user_settings::UserSettings;
 use crate::{database, user};
 
@@ -39,7 +40,7 @@ impl RuntimeBuilder {
         let (event_sender, event_recv) = mpsc::channel(100);
 
         let db = Arc::new(
-            database::create_connection(&self.user_settings.data_dir.to_str().unwrap()).await?,
+            database::create_connection("/home/pplanel/w/supabar/crates/core/dev.db").await?,
         );
 
         let internal_channel = unbounded_channel::<InternalEvent>();
@@ -133,15 +134,20 @@ impl Runtime {
     }
 
     // Setup will perform some checks and spin jobs
-    pub async fn setup(&self) {
+    pub async fn setup(&self) -> Result<()> {
         let ctx = self.get_context();
         // Get user indexable content
         match user::load_or_create(&ctx).await {
-            Ok(_) => info!("Supabar initiated"),
+            Ok(user) => {
+                info!("Supabar initiated");
+                ctx.spawn_job(Box::new(IndexHome { user }))
+            }
             Err(er) => panic!("{}", format!("Some shit happend {}", er)),
         }
         // Create index for user
         // Index content
+        //
+        Ok(())
     }
 
     #[instrument(skip(self))]
@@ -212,7 +218,6 @@ impl Handler {
     }
 }
 
-#[derive(Debug)]
 pub enum InternalEvent {
     JobIngest(Box<dyn Job>),
     JobQueue(Box<dyn Job>),
@@ -231,7 +236,7 @@ impl Context {
         self.internal_sender
             .send(InternalEvent::JobIngest(job))
             .unwrap_or_else(|e| {
-                println!("Failed to spawn job. {:?}", e);
+                debug!("Failed to spawn job. {}", e);
             });
     }
     pub async fn emit(&self, event: Event) {
