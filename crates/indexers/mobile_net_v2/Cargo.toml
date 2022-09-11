@@ -1,4 +1,4 @@
-cargo-features = ["workspace-inheritance"]
+
 [package]
 name = "mobile_net_v2_indexer"
 version.workspace = true

@@ -44,8 +44,8 @@ pub mod candidate {
 
         FileCandidate {
             path: PathBuf::from(path),
-            hash: hash,
-            contents: contents,
+            hash,
+            contents,
         }
     }
 

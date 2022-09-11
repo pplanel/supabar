@@ -1,4 +1,3 @@
-cargo-features = ["workspace-inheritance"]
 [package]
 name = "store"
 version.workspace = true

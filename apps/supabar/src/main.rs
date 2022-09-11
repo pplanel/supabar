@@ -1,7 +1,7 @@
 extern crate core as supabar;
 mod repl;
 use anyhow::Result;
-use supabar::{LocalInfo, Runtime, UserSettings};
+use supabar::{Runtime, LocalInfo, UserSettings};
 
 #[tokio::main]
 async fn main() -> Result<()> {

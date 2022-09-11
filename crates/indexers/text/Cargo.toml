@@ -1,4 +1,3 @@
-cargo-features = ["workspace-inheritance"]
 [package]
 name = "text_indexer"
 version.workspace = true

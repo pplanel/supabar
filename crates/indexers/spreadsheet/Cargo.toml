@@ -1,4 +1,4 @@
-cargo-features = ["workspace-inheritance"]
+
 [package]
 name = "spreadsheet_indexer"
 version.workspace = true
