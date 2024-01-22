@@ -1,9 +1,6 @@
 use anyhow::Result;
-use gio::AppInfo;
-use gio::{glib, prelude::AppInfoExt};
 use std::process::{Command, Stdio};
 use std::str::FromStr;
-use std::sync::Arc;
 use thiserror::Error;
 use tokio::sync::{
     mpsc::{self, unbounded_channel, UnboundedReceiver, UnboundedSender},
@@ -13,10 +10,10 @@ use tracing::{debug, info, instrument};
 
 use crate::job::jobs::{Job, Jobs};
 use crate::local_info::LocalInfo;
-use crate::prisma::PrismaClient;
 use crate::user::index::IndexHome;
 use crate::user_settings::UserSettings;
-use crate::{database, user};
+use crate::user;
+use application;
 
 #[derive(Default, Debug)]
 pub struct RuntimeBuilder {
@@ -39,16 +36,12 @@ impl RuntimeBuilder {
     pub async fn build(self) -> Result<(Runtime, mpsc::Receiver<Event>)> {
         let (event_sender, event_recv) = mpsc::channel(100);
 
-        let db = Arc::new(
-            database::create_connection("/home/pplanel/w/supabar/crates/core/dev.db").await?,
-        );
 
         let internal_channel = unbounded_channel::<InternalEvent>();
 
         let core = Runtime {
             user_settings: self.user_settings,
             config: self.config,
-            database: db,
             jobs: Jobs::new(),
             query_channel: unbounded_channel(),
             command_channel: unbounded_channel(),
@@ -64,7 +57,6 @@ impl RuntimeBuilder {
 pub struct Runtime {
     user_settings: UserSettings,
     config: LocalInfo,
-    database: Arc<PrismaClient>,
     jobs: Jobs,
     query_channel: (
         UnboundedSender<ReturnableMessage<ClientQuery>>,
@@ -88,7 +80,6 @@ impl Runtime {
 
     pub fn get_context(&self) -> Context {
         Context {
-            database: self.database.clone(),
             event_sender: self.event_sender.clone(),
             internal_sender: self.internal_channel.0.clone(),
         }
@@ -154,9 +145,9 @@ impl Runtime {
     pub async fn exec_query(&self, query: ClientQuery) -> Result<Response, CoreError> {
         Ok(match query {
             ClientQuery::ListApplications => Response::ListApplications {
-                applications: AppInfo::all()
+                applications: application::get_apps()
                     .iter()
-                    .map(|app_info| app_info.name().to_string())
+                    .map(|app_info| app_info.name.clone())
                     .collect(),
             },
             _ => panic!("asdas"),
@@ -169,11 +160,11 @@ impl Runtime {
             ClientCommand::OpenFile { path } => Ok(Response::OpenFile(path)),
             ClientCommand::SearchFile { term } => Ok(Response::SearchFile(Vec::from([term]))),
             ClientCommand::OpenApp { app_name } => {
-                if let Some(app) = AppInfo::all()
+                if let Some(app) = application::get_apps()
                     .iter()
-                    .find(|info| info.name().to_string().eq(&app_name))
+                    .find(|info| info.name.eq(&app_name))
                 {
-                    let cmd = app.executable();
+                    let cmd = &app.app_path_exe;
                     debug!("cmd was ---- {:?}", &cmd.as_os_str());
                     Command::new(cmd)
                         .stderr(Stdio::null())
@@ -226,7 +217,6 @@ pub enum InternalEvent {
 
 #[derive(Clone)]
 pub struct Context {
-    pub database: Arc<PrismaClient>,
     pub event_sender: mpsc::Sender<Event>,
     pub internal_sender: UnboundedSender<InternalEvent>,
 }
@@ -308,10 +298,4 @@ pub enum CoreError {
     QueryError,
     #[error("Command error")]
     CommandError,
-}
-
-impl From<glib::Error> for CoreError {
-    fn from(_: glib::Error) -> Self {
-        Self::CommandError
-    }
 }

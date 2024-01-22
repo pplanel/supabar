@@ -6,6 +6,7 @@ use rustyline::{error::ReadlineError, Editor};
 use rustyline::{
     Cmd, ConditionalEventHandler, Context, Event, EventContext, EventHandler, KeyEvent, RepeatCount,
 };
+use rustyline::history::DefaultHistory;
 use rustyline_derive::{Completer, Helper, Highlighter, Validator};
 use supabar::{ClientCommand, ClientQuery, Handler, Response};
 
@@ -89,7 +90,7 @@ pub async fn run_cli(core_handler: &Handler) {
     let h = DIYHinter {
         hints: get_app_hints(core_handler).await,
     };
-    let mut rl: Editor<DIYHinter> = Editor::new();
+    let mut rl: Editor<DIYHinter, DefaultHistory> = Editor::new().expect("asd");
     rl.set_helper(Some(h));
     rl.bind_sequence(
         KeyEvent::from('\t'),
@@ -101,7 +102,7 @@ pub async fn run_cli(core_handler: &Handler) {
             Ok(line) => match line.parse::<ClientCommand>() {
                 Ok(command) => match core_handler.command(command).await {
                     Ok(_response) => {
-                        println!("Command went througt")
+                        println!("Command went througt {_response:?}")
                     }
                     Err(err) => println!("command error {:?}", err),
                 },

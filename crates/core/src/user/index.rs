@@ -4,7 +4,7 @@ use crate::job::{jobs::Job, worker::WorkerContext};
 use contracts::candidate::new_file_to_process;
 use indexers::Analyzer;
 use jwalk::WalkDirGeneric;
-use tracing::{event, info, span, Level};
+use tracing::{event, span, Level, debug};
 
 use super::User;
 
@@ -58,21 +58,23 @@ impl Job for IndexHome {
             .collect();
         event!(Level::DEBUG, "Files collected, ready to process.");
 
-        let docs = tokio::task::spawn(async move {
+        let _docs = tokio::task::spawn(async move {
             event!(Level::DEBUG, "Processing files");
 
             let analyzer = Analyzer::default();
             let mut docs = Vec::new();
-            for f in files {
-                let candidate = new_file_to_process(f.clone()).await;
+            for f in &files {
+                let candidate = new_file_to_process(f).await;
+                debug!("Got one candidate {candidate:?}");
                 docs.extend(analyzer.analyze(candidate).await);
             }
             event!(Level::DEBUG, "Processing done");
             docs
         })
         .await?;
+        debug!("This are the docs {_docs:?}");
 
-        self.user.store.inner.create_multi(&docs)?;
+        // self.user.store.inner.create_multi(&docs)?;
 
         Ok(())
     }

@@ -1,7 +1,6 @@
 use anyhow::Result;
 use serde::{Deserialize, Serialize};
 use std::{path::PathBuf, sync::RwLock};
-use store::store::Store;
 use whoami::hostname;
 
 use crate::local_info::LocalInfo;

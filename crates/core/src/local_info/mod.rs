@@ -1,5 +1,5 @@
-use standard_paths::*;
 use std::{collections::HashMap, path::PathBuf};
+use etcetera::{choose_app_strategy, AppStrategy, AppStrategyArgs};
 
 const APP_NAME: &str = "supabar";
 const APP_ORG: &str = "superluminal";
@@ -12,21 +12,18 @@ pub struct LocalInfo {
 
 impl LocalInfo {
     pub fn get() -> Self {
-        let sl = StandardPaths::new(APP_NAME, APP_ORG);
-        let app_data = sl
-            .writable_location(LocationType::AppDataLocation)
-            .expect("path dotnt exist");
-        let config = sl
-            .writable_location(LocationType::AppConfigLocation)
-            .expect("df");
-        for path in &[&app_data, &config] {
-            if !&path.exists() {
-                let _ = std::fs::create_dir_all(path.as_path());
-            }
-        }
+        let strategy = choose_app_strategy(AppStrategyArgs {
+            top_level_domain: "org".to_string(),
+            author: "pplanel".to_string(),
+            app_name: "supabar".to_string(),
+        }).unwrap();
+
+        let app_config = strategy.config_dir();
+        let app_data = strategy.data_dir();
+
         LocalInfo {
             app_data,
-            app_config: config,
+            app_config,
         }
     }
     pub fn get_user_data_dir(&self, username: &str) -> PathBuf {

@@ -1,6 +1,6 @@
 [package]
 name = "core"
-version.workspace = true
+version = "0.0.1"
 description.workspace = true
 authors.workspace = true
 edition.workspace = true
@@ -8,14 +8,11 @@ edition.workspace = true
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [dependencies]
 indexers = { path="../indexers"}
+application= {path = "../indexers/application"}
 contracts = { path = "../contracts" }
 store = { path = "../store" }
-prisma-client-rust-cli.workspace = true
-prisma-client-rust.workspace = true
-gio = "0.15.11"
-standard_paths = "1.1.0"
 whoami = "1.2.1"
-toml = "0.5.9"
+toml = "0.8.8"
 int-enum.workspace = true
 once_cell.workspace = true
 tokio.workspace = true
@@ -30,11 +27,12 @@ lazy_static.workspace = true
 anyhow.workspace = true
 serde.workspace = true
 thiserror.workspace = true
-bigdecimal = "0.3.0"
+bigdecimal = "0.4.2"
 hostname = "0.3.1"
 home = "0.5.3"
-jwalk = "0.6.0"
+jwalk = "0.8.1"
 rayon = "1.5.3"
+etcetera = "0.8.0"
 
 [dependencies.uuid]
 version = "1.0.0"
@@ -44,7 +42,3 @@ features = [
     "macro-diagnostics", # Enable better diagnostics for compile-time UUIDs
     "serde"
 ]
-
-[[bin]]
-name = "prisma"
-path = "src/bin/prisma.rs"

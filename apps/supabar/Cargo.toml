@@ -1,8 +1,6 @@
-
-
 [package]
 name = "supabar_app"
-version.workspace = true
+version = "0.0.1"
 description.workspace = true
 authors.workspace = true
 edition.workspace = true
@@ -10,9 +8,9 @@ edition.workspace = true
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-core = { version = "0.1.0", path = "../../crates/core" }
+core = { path = "../../crates/core" }
 anyhow.workspace = true
 tokio.workspace = true
 tracing-subscriber.workspace = true
-rustyline = "9.1.2"
-rustyline-derive = "0.6.0"
+rustyline = "13.0.0"
+rustyline-derive = "0.10.0"

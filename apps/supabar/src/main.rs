@@ -8,6 +8,7 @@ async fn main() -> Result<()> {
     tracing_subscriber::fmt::init();
 
     let config = LocalInfo::get();
+    dbg!(&config);
     let user_settings = UserSettings::new(&config)?;
 
     let runtime = Runtime::builder()

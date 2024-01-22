@@ -1,11 +1,11 @@
 [package]
 name = "indexers"
-version.workspace = true
 description.workspace = true
 authors.workspace = true
 edition.workspace = true
 
 [dependencies]
+application = {path = 'application'}
 contracts = { path = "../contracts" }
 csv_indexer = { path = "csv" }
 # docx_indexer = { path = "docx" }

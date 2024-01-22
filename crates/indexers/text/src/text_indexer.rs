@@ -13,10 +13,6 @@ impl Indexer for TextIndexer {
         extension == OsStr::new("txt")
     }
 
-    fn supported_extensions(&self) -> Vec<OsString> {
-        vec![OsString::from("txt")]
-    }
-
     fn index_file(&self, file_to_process: &FileCandidate) -> Result<DocumentSchema> {
         span!(Level::INFO, "text_indexer: indexing text file").in_scope(|| {
             let name = file_to_process
@@ -34,12 +30,16 @@ impl Indexer for TextIndexer {
             })?;
 
             Ok(DocumentSchema {
-                name: name,
+                name,
                 body: body.to_string(),
                 media_type: "text".into(),
                 path: file_to_process.path(),
             })
         })
+    }
+
+    fn supported_extensions(&self) -> Vec<OsString> {
+        vec![OsString::from("txt")]
     }
 }
 

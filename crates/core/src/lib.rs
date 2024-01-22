@@ -1,6 +1,6 @@
+#![allow(unused)]
 #[macro_use]
 extern crate lazy_static;
-pub mod prisma;
 pub mod runtime;
 pub use runtime::{ClientCommand, ClientQuery, Event, Handler, Response, Runtime};
 mod database;

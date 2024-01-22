@@ -7,7 +7,7 @@ impl<S> Layer<S> for LogLayer where S: tracing::Subscriber {}
 
 pub fn setup_global_subscriber() {
     let _t = tracing_subscriber::fmt()
-        .with_max_level(Level::INFO)
+        .with_max_level(Level::TRACE)
         .finish()
         .try_init();
 }
